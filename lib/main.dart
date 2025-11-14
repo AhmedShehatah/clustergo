@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/create_ride_screen.dart';
 import 'screens/profile_screen.dart';
-// this is nada
+import 'utils/colors.dart';
+
 void main() {
-  runApp(const ClusterGoApp());
+  runApp(ClusterGoApp());
 }
 
 class ClusterGoApp extends StatelessWidget {
-  const ClusterGoApp({super.key});
+  const ClusterGoApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,28 +17,29 @@ class ClusterGoApp extends StatelessWidget {
       title: 'ClusterGo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.grey[50],
+        primaryColor: AppColors.primary,
+        scaffoldBackgroundColor: AppColors.background,
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
       ),
-      home: const MainScreen(),
+      home: MainNavigation(),
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({Key? key}) : super(key: key);
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<MainNavigation> createState() => _MainNavigationState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainNavigationState extends State<MainNavigation> {
   int currentIndex = 0;
 
   final screens = [
-    const HomeScreen(),
-    const CreateRideScreen(),
-    const ProfileScreen(),
+    HomeScreen(),
+    CreateRideScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -51,17 +53,19 @@ class _MainScreenState extends State<MainScreen> {
             currentIndex = index;
           });
         },
-        items: const [
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.textLight,
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle_outline),
-            label: 'Create Ride',
+            label: 'Create',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
+            icon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
