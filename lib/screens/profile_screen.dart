@@ -32,7 +32,7 @@ class ProfileScreen extends StatelessWidget {
                     radius: 50,
                     backgroundColor: Colors.white,
                     child: Text(
-                      'MK',
+                      'NS',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
