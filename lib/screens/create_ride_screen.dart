@@ -163,7 +163,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
               ElevatedButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Ride creation will be implemented in Phase 2')),
+                    SnackBar(content: Text('Phase 2 : Stay Tuned:)')),
                   );
                 },
                 style: ElevatedButton.styleFrom(

@@ -4,7 +4,7 @@ List<RideIntent> getSampleRides() {
   return [
     RideIntent(
       id: '1',
-      userName: 'Ahmed Hassan',
+      userName: 'Nada Nabil',
       pickup: 'Main Gate',
       destination: 'Nasr City',
       time: DateTime.now().add(Duration(minutes: 15)),
@@ -12,7 +12,7 @@ List<RideIntent> getSampleRides() {
     ),
     RideIntent(
       id: '2',
-      userName: 'Sara Mohamed',
+      userName: 'Sara ALi',
       pickup: 'Engineering Building',
       destination: 'Heliopolis',
       time: DateTime.now().add(Duration(minutes: 30)),
@@ -20,7 +20,7 @@ List<RideIntent> getSampleRides() {
     ),
     RideIntent(
       id: '3',
-      userName: 'Omar Ali',
+      userName: 'Rghda shehata',
       pickup: 'Library',
       destination: 'Maadi',
       time: DateTime.now().add(Duration(hours: 1)),
@@ -28,7 +28,7 @@ List<RideIntent> getSampleRides() {
     ),
     RideIntent(
       id: '4',
-      userName: 'Nour Khaled',
+      userName: 'Tasneem Muhammed',
       pickup: 'Main Gate',
       destination: 'Downtown',
       time: DateTime.now().add(Duration(hours: 1, minutes: 20)),

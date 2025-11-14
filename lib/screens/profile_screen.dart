@@ -51,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'mohamed.khaled@university.edu',
+                    'nada.soudi@university.edu',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white.withOpacity(0.9),
@@ -65,7 +65,7 @@ class ProfileScreen extends StatelessWidget {
               padding: EdgeInsets.all(16),
               child: Column(
                 children: [
-                  buildInfoCard('University', 'Mansoura University', Icons.school),
+                  buildInfoCard('University', 'Zewail University', Icons.school),
                   SizedBox(height: 12),
                   buildInfoCard('Member Since', 'November 2024', Icons.calendar_today),
                   SizedBox(height: 12),
