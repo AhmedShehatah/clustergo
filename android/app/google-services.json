@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "91422084282",
+    "project_id": "zc-mobile-project",
+    "storage_bucket": "zc-mobile-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91422084282:android:d00c78f0f89802646ac683",
+        "android_client_info": {
+          "package_name": "com.example.clustergo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_UCn4iwklEMgRuRQkExm4HQTu2-JRAUQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
