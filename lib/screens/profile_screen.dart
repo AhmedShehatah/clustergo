@@ -1,95 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../utils/colors.dart';
-import '../providers/profile_provider.dart';
+import '../providers/auth_provider.dart';
+import 'package:intl/intl.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
+  String _getInitials(String name) {
+    if (name.isEmpty) return '??';
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    } else if (parts.length == 1 && parts[0].isNotEmpty) {
+      return parts[0][0].toUpperCase();
+    }
+    return '??';
+  }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Fetch profile data when screen loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProfileProvider>(context, listen: false).fetchUserProfile();
-    });
+  String _formatMemberSince(dynamic timestamp) {
+    try {
+      if (timestamp == null) return 'Recently';
+      DateTime date;
+      if (timestamp is String) {
+        date = DateTime.parse(timestamp);
+      } else {
+        // Firestore Timestamp
+        date = timestamp.toDate();
+      }
+      return DateFormat('d MMMM yyyy').format(date);
+    } catch (e) {
+      return 'Recently';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final profileProvider = Provider.of<ProfileProvider>(context);
-    final userProfile = profileProvider.userProfile;
-    final isLoading = profileProvider.isLoading;
-    final error = profileProvider.error;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userData = authProvider.userData;
+    final user = authProvider.user;
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
         backgroundColor: AppColors.primary,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {
-              profileProvider.retry();
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Logout'),
+                  content: const Text('Are you sure you want to logout?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirm == true) {
+                await authProvider.signOut();
+              }
             },
           ),
         ],
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
-          : error != null
+      body: userData == null
           ? Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 80, color: Colors.red),
-                    SizedBox(height: 16),
-                    Text(
-                      error,
-                      style: TextStyle(fontSize: 16, color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        profileProvider.retry();
-                      },
-                      icon: Icon(Icons.refresh),
-                      label: Text('Retry'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : userProfile == null
-          ? Center(
-              child: Text(
-                'No profile data available',
-                style: TextStyle(fontSize: 16, color: AppColors.textLight),
-              ),
+              child: CircularProgressIndicator(color: AppColors.primary),
             )
           : SingleChildScrollView(
               child: Column(
                 children: [
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: AppColors.primary,
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(30),
                         bottomRight: Radius.circular(30),
                       ),
@@ -100,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           radius: 50,
                           backgroundColor: Colors.white,
                           child: Text(
-                            userProfile.initials,
+                            _getInitials(userData['name'] ?? 'User'),
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -108,18 +106,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
-                          userProfile.name,
-                          style: TextStyle(
+                          userData['name'] ?? 'User',
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          userProfile.email,
+                          user?.email ?? '',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white.withOpacity(0.9),
@@ -128,32 +126,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
                         _buildInfoCard(
                           'University',
-                          userProfile.university,
+                          userData['university'] ?? 'Not specified',
                           Icons.school,
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildInfoCard(
                           'Member Since',
-                          userProfile.formattedMemberSince,
+                          _formatMemberSince(userData['memberSince']),
                           Icons.calendar_today,
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildInfoCard(
                           'Total Rides',
-                          userProfile.formattedTotalRides,
+                          '${userData['totalRides'] ?? 0} ${(userData['totalRides'] ?? 0) == 1 ? 'ride' : 'rides'}',
                           Icons.directions_car,
                         ),
-                        SizedBox(height: 24),
+                        const SizedBox(height: 24),
                         Container(
                           width: double.infinity,
-                          padding: EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: AppColors.cardColor,
                             borderRadius: BorderRadius.circular(12),
@@ -169,12 +167,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   color: AppColors.textDark,
                                 ),
                               ),
-                              SizedBox(height: 12),
-                              ...userProfile.preferences.map(
-                                (pref) => _buildPreferenceItem(
-                                  pref.displayLabel,
-                                  pref.allowed,
-                                ),
+                              const SizedBox(height: 12),
+                              _buildPreferenceItem(
+                                'Music allowed',
+                                userData['preferences']?['music'] ?? false,
+                              ),
+                              _buildPreferenceItem(
+                                'Talking allowed',
+                                userData['preferences']?['talking'] ?? false,
+                              ),
+                              _buildPreferenceItem(
+                                'AC preferred',
+                                userData['preferences']?['ac'] ?? true,
                               ),
                             ],
                           ),
@@ -190,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildInfoCard(String title, String value, IconData icon) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.cardColor,
         borderRadius: BorderRadius.circular(12),
@@ -198,23 +202,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: AppColors.primary, size: 24),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontSize: 12, color: AppColors.textLight),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textLight,
+                  ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   value,
                   style: TextStyle(
@@ -233,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildPreferenceItem(String label, bool value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -4,11 +4,21 @@ import '../widgets/ride_card.dart';
 import '../providers/rides_provider.dart';
 import '../utils/colors.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     final ridesProvider = Provider.of<RidesProvider>(context);
     final rides = ridesProvider.rides;
     final isLoading = ridesProvider.isLoading;
@@ -17,12 +27,12 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('Available Rides'),
+        title: const Text('Available Rides'),
         backgroundColor: AppColors.primary,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: () {
               ridesProvider.listenToRides();
             },
@@ -34,26 +44,28 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 80, color: Colors.red),
-                  SizedBox(height: 16),
+                  const Icon(Icons.error_outline, size: 80, color: Colors.red),
+                  const SizedBox(height: 16),
                   Text(
                     error,
-                    style: TextStyle(fontSize: 16, color: Colors.red),
+                    style: const TextStyle(fontSize: 16, color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
                       ridesProvider.clearError();
                       ridesProvider.listenToRides();
                     },
-                    child: Text('Retry'),
+                    child: const Text('Retry'),
                   ),
                 ],
               ),
             )
           : isLoading
-          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
           : rides.isEmpty
           ? Center(
               child: Column(
@@ -64,12 +76,12 @@ class HomeScreen extends StatelessWidget {
                     size: 80,
                     color: AppColors.textLight,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'No rides available',
                     style: TextStyle(fontSize: 18, color: AppColors.textLight),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Create a ride to get started!',
                     style: TextStyle(fontSize: 14, color: AppColors.textLight),
@@ -78,10 +90,15 @@ class HomeScreen extends StatelessWidget {
               ),
             )
           : ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: rides.length,
               itemBuilder: (context, index) {
-                return RideCard(ride: rides[index]);
+                return RepaintBoundary(
+                  child: RideCard(
+                    key: ValueKey(rides[index].id),
+                    ride: rides[index],
+                  ),
+                );
               },
             ),
     );
