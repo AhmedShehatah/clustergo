@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../models/ride_intent.dart';
-import '../services/firebase_manager.dart';
+import '../services/rides_service.dart';
 
 class RidesProvider with ChangeNotifier {
-  final FirebaseManager _firebaseManager = FirebaseManager();
+  final RidesService _ridesService = RidesService();
 
   List<RideIntent> _rides = [];
   bool _isLoading = false;
@@ -26,7 +26,7 @@ class RidesProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    _ridesSubscription = _firebaseManager.getRidesStream().listen(
+    _ridesSubscription = _ridesService.getRidesStream().listen(
       (rides) {
         _rides = rides;
         _isLoading = false;
@@ -44,7 +44,7 @@ class RidesProvider with ChangeNotifier {
   // Create a new ride
   Future<String?> createRide(RideIntent ride) async {
     try {
-      final rideId = await _firebaseManager.createRide(ride);
+      final rideId = await _ridesService.createRide(ride);
       return rideId;
     } catch (e) {
       _error = 'Failed to create ride: $e';
@@ -56,7 +56,7 @@ class RidesProvider with ChangeNotifier {
   // Update a ride
   Future<bool> updateRide(String rideId, Map<String, dynamic> updates) async {
     try {
-      await _firebaseManager.updateRide(rideId, updates);
+      await _ridesService.updateRide(rideId, updates);
       return true;
     } catch (e) {
       _error = 'Failed to update ride: $e';
@@ -68,7 +68,7 @@ class RidesProvider with ChangeNotifier {
   // Delete a ride
   Future<bool> deleteRide(String rideId) async {
     try {
-      await _firebaseManager.deleteRide(rideId);
+      await _ridesService.deleteRide(rideId);
       return true;
     } catch (e) {
       _error = 'Failed to delete ride: $e';
@@ -80,7 +80,7 @@ class RidesProvider with ChangeNotifier {
   // Update available seats
   Future<bool> updateAvailableSeats(String rideId, int newSeats) async {
     try {
-      await _firebaseManager.updateAvailableSeats(rideId, newSeats);
+      await _ridesService.updateAvailableSeats(rideId, newSeats);
       return true;
     } catch (e) {
       _error = 'Failed to update seats: $e';

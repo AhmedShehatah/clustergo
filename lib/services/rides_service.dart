@@ -1,10 +1,10 @@
 import 'package:firebase_database/firebase_database.dart';
 import '../models/ride_intent.dart';
 
-class FirebaseManager {
-  static final FirebaseManager _instance = FirebaseManager._internal();
-  factory FirebaseManager() => _instance;
-  FirebaseManager._internal();
+class RidesService {
+  static final RidesService _instance = RidesService._internal();
+  factory RidesService() => _instance;
+  RidesService._internal();
 
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
 

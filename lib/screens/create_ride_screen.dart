@@ -91,7 +91,10 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
       );
 
       // Save to Firebase using provider
-      final ridesProvider = Provider.of<RidesProvider>(context, listen: false);
+      final ridesProvider = Provider.of<RidesProvider>(
+        context,
+        listen: false,
+      ); // I don't need to update the ui here I just want to use some logic from the provider
       final rideId = await ridesProvider.createRide(ride);
 
       if (rideId != null) {
